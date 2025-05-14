@@ -1,7 +1,7 @@
 {
   "name": "coc-proxy-x-shadinbhuiyan",
   "version": "1.0.0",
-  "description": "Clash of Clans API Proxy Server",
+  "description": "Clash of Clans proxy server using Express and Axios",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
