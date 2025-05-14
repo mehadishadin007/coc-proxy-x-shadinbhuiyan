@@ -1,36 +1,30 @@
-const express = require("express");
-const fetch = require("node-fetch");
-const cors = require("cors");
-
+const express = require('express');
+const axios = require('axios');
 const app = express();
-app.use(cors());
+const port = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000;
-const API_TOKEN = "eyJ0eXAiOiJKV1QiLCJh..."; // তোমার আসল API token এখানে বসাও
+// এখানে API token বসবে Render-এর Environment Variables এর ভিতরে
+const token = process.env.API_TOKEN;
 
-app.get("/clan/:tag", async (req, res) => {
-  const tag = encodeURIComponent("#" + req.params.tag);
-  const url = `https://api.clashofclans.com/v1/clans/${tag}`;
+app.get('/player/:tag', async (req, res) => {
+  const tag = req.params.tag.replace('#', '%23');
+  const url = `https://api.clashofclans.com/v1/players/${tag}`;
 
   try {
-    const response = await fetch(url, {
+    const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
-
-    if (!response.ok) {
-      const text = await response.text();
-      return res.status(response.status).send(text);
-    }
-
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    res.json(response.data);
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      message: "Data not found or an error occurred"
+    });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
